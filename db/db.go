@@ -35,11 +35,30 @@ func GetTask(id string) (model.Task, error) {
 }
 
 func UpdateTask(id string, task model.Task) error {
-	// desc := task.Description
-	// title := task.Title
-	// startTime := task.StartTime
-	// query := "update task set Description=?, Title=?, StartTime=? where ID=?"
-
+	db := createConnection()
+	defer db.Close()
+	var paramList []any
+	query := "update task set"
+	if task.Description != "" {
+		query = query + " Description=?,"
+		paramList = append(paramList, task.Description)
+	}
+	if task.Title != "" {
+		query = query + " Title=?,"
+		paramList = append(paramList, task.Title)
+	}
+	if !task.StartTime.IsZero() {
+		query = query + " StartTime=?,"
+		paramList = append(paramList, task.StartTime)
+	}
+	query = query[:len(query)-1]
+	query = query + " where ID=?"
+	paramList = append(paramList, id)
+	_, err := db.Exec(query, paramList...)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CreateTask(task models.Task) error {

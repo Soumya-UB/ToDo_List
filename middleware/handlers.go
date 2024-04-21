@@ -51,7 +51,19 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(res)
 		return
 	}
-	db.UpdateTask(id, task)
+	err1 := db.UpdateTask(id, task)
+	if err1 != nil {
+		log.Printf("Error updating task: %v", err1.Error())
+		res := response{
+			Message: err1.Error(),
+		}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+	res2 := response{
+		Message: "Record successfully updated",
+	}
+	json.NewEncoder(w).Encode(res2)
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
