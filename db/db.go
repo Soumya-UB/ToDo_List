@@ -26,12 +26,35 @@ func GetTask(id string) (model.Task, error) {
 	defer dbConn.Close()
 	var task model.Task
 	row := dbConn.QueryRow(query, id)
-	// t := time.Time{}
 	err := row.Scan(&task.Id, &task.Title, &task.Description, &task.StartTime)
 	if err != nil {
 		return task, err
 	}
 	return task, nil
+}
+
+func GetAllTasks() ([]model.Task, error) {
+	query := "select * from Task"
+	db := createConnection()
+	defer db.Close()
+	var tasks []model.Task
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var task model.Task
+		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.StartTime)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+	if err1 := rows.Err(); err1 != nil {
+		return nil, err1
+	}
+	return tasks, nil
 }
 
 func UpdateTask(id string, task model.Task) error {

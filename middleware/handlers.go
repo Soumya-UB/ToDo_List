@@ -35,6 +35,23 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
+func GetAllTasks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	tasks, err := db.GetAllTasks()
+	if err != nil {
+		log.Printf("Error getting all tasks: %v", err)
+		res := response{
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(res)
+		return
+	}
+	json.NewEncoder(w).Encode(tasks)
+}
+
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
