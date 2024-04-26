@@ -1,9 +1,11 @@
 package db
 
 import (
+	"ToDo_List/errorTypes"
 	"ToDo_List/models"
 	model "ToDo_List/models"
 	"database/sql"
+	"errors"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -27,8 +29,9 @@ func GetTask(id string) (model.Task, error) {
 	var task model.Task
 	row := dbConn.QueryRow(query, id)
 	err := row.Scan(&task.Id, &task.Title, &task.Description, &task.StartTime)
-	if err != nil {
-		return task, err
+	if errors.Is(err, sql.ErrNoRows) {
+		err1 := errorTypes.NoRowsFoundError{"No row for id: " + id}
+		return task, &err1
 	}
 	return task, nil
 }

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"ToDo_List/db"
+	"ToDo_List/errorTypes"
 	"ToDo_List/models"
 	"encoding/json"
 	"log"
@@ -14,22 +15,20 @@ type response struct {
 	Message string `json:"message,omitempty"`
 }
 
-// type errResponse struct {
-// 	ErrorMessage string `json:"message,omitempty"`
-// }
-
 func GetTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	params := mux.Vars(r)
 	id := params["id"]
 	task, err := db.GetTask(id)
+
 	if err != nil {
-		log.Printf("Error getting task: %v", err)
-		res := response{
-			Message: err.Error(),
+		_, ok := err.(*errorTypes.NoRowsFoundError)
+		if ok {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
-		json.NewEncoder(w).Encode(res)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(task)
