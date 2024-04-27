@@ -5,7 +5,6 @@ import (
 	"ToDo_List/errorTypes"
 	"ToDo_List/models"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -34,6 +33,28 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	id := params["id"]
+	err := db.DeleteTask(id)
+	if err != nil {
+		if _, ok := err.(*errorTypes.NoRowsFoundError); ok {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	res2 := response{
+		Message: "Record successfully updated",
+	}
+	json.NewEncoder(w).Encode(res2)
+}
+
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -41,11 +62,7 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	tasks, err := db.GetAllTasks()
 	if err != nil {
-		log.Printf("Error getting all tasks: %v", err)
-		res := response{
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(res)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(tasks)
@@ -61,19 +78,18 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
-		res := response{
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(res)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err1 := db.UpdateTask(id, task)
 	if err1 != nil {
-		log.Printf("Error updating task: %v", err1.Error())
-		res := response{
-			Message: err1.Error(),
+		// http.Error(w, err1.Error(), http.StatusInternalServerError)
+		// return
+		if _, ok := err1.(*errorTypes.NoRowsFoundError); ok {
+			http.Error(w, err1.Error(), http.StatusNotFound)
+			return
 		}
-		json.NewEncoder(w).Encode(res)
+		http.Error(w, err1.Error(), http.StatusInternalServerError)
 		return
 	}
 	res2 := response{
@@ -90,18 +106,12 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
-		res := response{
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(res)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err1 := db.CreateTask(task)
 	if err1 != nil {
-		res1 := response{
-			Message: err1.Error(),
-		}
-		json.NewEncoder(w).Encode(res1)
+		http.Error(w, err1.Error(), http.StatusInternalServerError)
 		return
 	}
 	res2 := response{

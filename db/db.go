@@ -80,9 +80,26 @@ func UpdateTask(id string, task model.Task) error {
 	query = query[:len(query)-1]
 	query = query + " where ID=?"
 	paramList = append(paramList, id)
-	_, err := db.Exec(query, paramList...)
+	records, err := db.Exec(query, paramList...)
 	if err != nil {
 		return err
+	}
+	if num, _ := records.RowsAffected(); num < 1 {
+		return &errorTypes.NoRowsFoundError{"No row for id: " + id}
+	}
+	return nil
+}
+
+func DeleteTask(id string) error {
+	db := createConnection()
+	defer db.Close()
+	query := "delete from Task where Id=?"
+	records, err := db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	if num, _ := records.RowsAffected(); num < 1 {
+		return &errorTypes.NoRowsFoundError{"No row for id: " + id}
 	}
 	return nil
 }
