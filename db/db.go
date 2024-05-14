@@ -6,19 +6,28 @@ import (
 	model "ToDo_List/models"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func createConnection() *sql.DB {
-	db, err := sql.Open("mysql", "root:Jan@2019@tcp(127.0.0.1:3306)/test?parseTime=true")
+	// db, err := sql.Open("mysql", "root:Jan@2019@tcp(127.0.0.1:3306)/test?parseTime=true")
+	// db, err := sql.Open("mysql", "root:Jan@2019@tcp(todo_list-mysql-1:3306)/test?parseTime=true")
+	db, err := sql.Open("mysql", "root:Jan@2019@tcp(db:3306)/test?parseTime=true")
 
 	if err != nil {
+		fmt.Println(err.Error())
 		panic(err.Error())
 	}
 
-	db.Ping()
+	err1 := db.Ping()
+	if err1 != nil {
+		fmt.Println(err1.Error())
+		panic(err.Error())
+	}
+	fmt.Println("db connection successful")
 	return db
 }
 
