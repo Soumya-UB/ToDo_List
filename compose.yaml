@@ -6,6 +6,8 @@ services:
   db:
     image: "mysql:8.3.0"
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+        - ./scripts/:/docker-entrypoint-initdb.d/
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: Jan@2019
