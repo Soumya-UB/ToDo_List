@@ -5,6 +5,7 @@
      c. Description
      d. StartTime
 3. Dockerize the application
-4. Configure logging
-5. Setup a CI/CD pipeline to deploy to OCI Compute instance
-6. Configure authn/authz
+4. Add an environment specific config.
+5. Configure logging
+6. Setup a CI/CD pipeline to deploy to OCI Compute instance
+7. Configure authn/authz
