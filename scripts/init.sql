@@ -2,7 +2,7 @@ create database test;
 
 use test;
 
-create table task (
+create table Task (
     ID int,
     Title varchar(25),
     Description varchar(50),
