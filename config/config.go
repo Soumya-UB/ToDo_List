@@ -18,7 +18,7 @@ type Config struct {
 
 func GetConfig() (Config, error) {
 	hn := os.Getenv("HOSTNAME")
-	if strings.Contains(hn, "DESKTOP") {
+	if strings.Contains(hn, "DESKTOP") { // Change logic to check for container name
 		viper.AddConfigPath("./config")
 		viper.SetConfigName("desktop")
 		viper.SetConfigType("yaml")
@@ -33,7 +33,7 @@ func GetConfig() (Config, error) {
 	}
 	port := viper.GetInt("db.port")
 	return Config{Username: fmt.Sprintf("%s", viper.Get("db.username")),
-		PasswordPath: fmt.Sprintf("%s", viper.Get("db.passwordPath")),
+		PasswordPath: "/run/secrets/db_password",
 		Instance:     fmt.Sprintf("%s", viper.Get("db.instance")),
 		Port:         port,
 		DbName:       fmt.Sprintf("%s", viper.Get("db.dbName"))}, nil
