@@ -1,6 +1,7 @@
 package db
 
 import (
+	"ToDo_List/config"
 	"ToDo_List/errorTypes"
 	"ToDo_List/models"
 	model "ToDo_List/models"
@@ -8,12 +9,48 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
+	"sync"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var (
+	conf config.Config
+	errN error
+)
+
+func newDbConfig() (config.Config, error) {
+	var once sync.Once
+	once.Do(func() {
+		conf, errN = config.GetConfig()
+		if errN != nil {
+			panic(fmt.Errorf("Fatal error reading config file: %w", errN))
+		}
+	})
+	return conf, nil
+}
+
 func createConnection() *sql.DB {
-	db, err := sql.Open("mysql", "root:Jan@2019@tcp(db:3306)/test?parseTime=true")
+	conf, err2 := newDbConfig()
+	if err2 != nil {
+		panic(err2.Error())
+	}
+	uname := conf.Username
+	passwordPath := conf.PasswordPath
+	instance := conf.Instance
+	port := conf.Port
+	dbName := conf.DbName
+	if _, err := os.Stat(passwordPath); errors.Is(err, os.ErrNotExist) {
+		panic(fmt.Errorf("Couldn't find db password %v", err.Error()))
+	}
+	password, err3 := os.ReadFile(passwordPath)
+	if err3 != nil {
+		panic(fmt.Errorf("Couldn't read db password %v", err3.Error()))
+	}
+	connString := uname + ":" + string(password[:]) + "@tcp(" + instance + ":" + strconv.Itoa(port) + ")/" + dbName + "?parseTime=true"
+	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
 		fmt.Println(err.Error())

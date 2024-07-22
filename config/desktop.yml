@@ -1,0 +1,6 @@
+db: 
+  username: root
+  passwordPath: ToDo_List_db_passwd
+  instance: localhost
+  port: 3306
+  dbName: test

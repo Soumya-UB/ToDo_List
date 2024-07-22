@@ -14,10 +14,21 @@ type response struct {
 	Message string `json:"message,omitempty"`
 }
 
+// var (
+// 	conf config.Config
+// 	errN error
+// )
+
 func GetTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	params := mux.Vars(r)
+	// conf1, err1 := newConfig()
+	// if err1 != nil {
+	// 	fmt.Errorf("Fatal error config file: %w", err1)
+	// 	return
+	// }
+
 	id := params["id"]
 	task, err := db.GetTask(id)
 

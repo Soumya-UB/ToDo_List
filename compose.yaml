@@ -10,4 +10,4 @@ services:
         - ./scripts/:/docker-entrypoint-initdb.d/
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: Jan@2019
+      MYSQL_ROOT_PASSWORD: Jun@2024
