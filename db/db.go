@@ -7,7 +7,6 @@ import (
 	model "ToDo_List/models"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -26,16 +25,16 @@ func newDbConfig() (config.Config, error) {
 	once.Do(func() {
 		conf, errN = config.GetConfig()
 		if errN != nil {
-			panic(fmt.Errorf("Fatal error reading config file: %w", errN))
+			log.Panicf("Fatal error reading config file: %w", errN)
 		}
 	})
 	return conf, nil
 }
 
-func createConnection() *sql.DB {
+func createConnection() *sql.DB { // Create connection just once
 	conf, err2 := newDbConfig()
 	if err2 != nil {
-		panic(err2.Error())
+		log.Panicf(err2.Error())
 	}
 	uname := conf.Username
 	passwordPath := conf.PasswordPath
@@ -43,26 +42,24 @@ func createConnection() *sql.DB {
 	port := conf.Port
 	dbName := conf.DbName
 	if _, err := os.Stat(passwordPath); errors.Is(err, os.ErrNotExist) {
-		panic(fmt.Errorf("Couldn't find db password %v", err.Error()))
+		log.Panicf("Couldn't find db password %v", err.Error())
 	}
 	password, err3 := os.ReadFile(passwordPath)
 	if err3 != nil {
-		panic(fmt.Errorf("Couldn't read db password %v", err3.Error()))
+		log.Panicf("Couldn't read db password %v", err3.Error())
 	}
 	connString := uname + ":" + string(password[:]) + "@tcp(" + instance + ":" + strconv.Itoa(port) + ")/" + dbName + "?parseTime=true"
 	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		panic(err.Error())
+		log.Panicf(err.Error())
 	}
 
 	err1 := db.Ping()
 	if err1 != nil {
-		fmt.Println(err1.Error())
-		panic(err.Error())
+		log.Panicf(err1.Error())
 	}
-	fmt.Println("db connection successful")
+	log.Println("db connection successful")
 	return db
 }
 
