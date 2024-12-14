@@ -5,6 +5,7 @@ services:
       - "8080:8080"
     secrets:
       - db_password
+    image: "smitra2/todo_list"
   db:
     image: "mysql:8.3.0"
     command: --default-authentication-plugin=mysql_native_password

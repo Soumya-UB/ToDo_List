@@ -10,7 +10,7 @@ import (
 
 func main() {
 	fmt.Println("App started")
-	setLogFile()
+	setLogFile() // Use goroutine to close the log file
 	r := router.Router()
 	http.ListenAndServe(":8080", r)
 }
