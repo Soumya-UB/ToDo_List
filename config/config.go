@@ -17,12 +17,18 @@ type Config struct {
 }
 
 func GetConfig() (Config, error) {
-	hn := os.Getenv("HOSTNAME")
-	if strings.Contains(hn, "DESKTOP") { // Change logic to check for container name
+	dat, e := os.ReadFile("/hostname")
+	if e != nil {
+		panic(e)
+	}
+	hostname := string(dat)
+	if strings.Contains(hostname, "DESKTOP") {
+		fmt.Println("Using desktop config")
 		viper.AddConfigPath("./config")
 		viper.SetConfigName("desktop")
 		viper.SetConfigType("yaml")
 	} else {
+		fmt.Println("Using default config")
 		viper.AddConfigPath("./config")
 		viper.SetConfigName("default")
 		viper.SetConfigType("yaml")

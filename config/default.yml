@@ -1,5 +1,5 @@
 db: 
   username: root
-  instance: db
+  instance: mysqldb
   port: 3306
   dbName: test
