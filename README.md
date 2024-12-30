@@ -13,3 +13,4 @@
 8. Configure logging
 9. Setup a CI/CD pipeline to deploy to OCI Compute instance
 10. Configure authn/authz
+     - Implemented authn using mTLS
