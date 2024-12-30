@@ -1,3 +1,5 @@
 .vscode/
 ToDo_List.exe
 ToDo_List_db_passwd
+cert.pem
+key.pem

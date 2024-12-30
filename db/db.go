@@ -7,7 +7,6 @@ import (
 	model "ToDo_List/models"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -49,9 +48,8 @@ func createConnection() *sql.DB { // Create connection just once
 	if err3 != nil {
 		log.Panicf("Couldn't read db password %v", err3.Error())
 	}
-	// fmt.Println("Username: " + uname + ", password: " + string(password))
 	connString := uname + ":" + string(password[:]) + "@tcp(" + instance + ":" + strconv.Itoa(port) + ")/" + dbName + "?parseTime=true"
-	fmt.Println("Connection string: " + connString)
+	log.Println("Connection string: %v", connString)
 	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
