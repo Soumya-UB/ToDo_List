@@ -2,9 +2,11 @@ create database test;
 
 use test;
 
-create table Task (
-    ID int,
-    Title varchar(25),
-    Description varchar(50),
-    StartTime timestamp
+create table File (
+    ID int not null AUTO_INCREMENT primary key,
+    Name varchar(25),
+    Size bigint,
+    CreatedTime timestamp,
+    LastUpdatedTime timestamp,
+    IsDir boolean
 );

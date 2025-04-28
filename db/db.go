@@ -64,60 +64,68 @@ func createConnection() *sql.DB { // Create connection just once
 	return db
 }
 
-func GetTask(id string) (model.Task, error) {
-	query := "select * from Task where Id=?"
+func GetFile(id string) (model.File, error) {
+	query := "select * from File where Id=?"
 	dbConn := createConnection()
 	defer dbConn.Close()
-	var task model.Task
+	var file model.File
 	row := dbConn.QueryRow(query, id)
-	err := row.Scan(&task.Id, &task.Title, &task.Description, &task.StartTime)
+	err := row.Scan(&file.Id, &file.Name, &file.Size, &file.CreatedTime, &file.LastUpdatedTime, &file.IsDir)
 	if errors.Is(err, sql.ErrNoRows) {
 		err1 := errorTypes.NoRowsFoundError{"No row for id: " + id}
-		return task, &err1
+		return file, &err1
 	}
-	return task, nil
+	return file, nil
 }
 
-func GetAllTasks() ([]model.Task, error) {
-	query := "select * from Task"
+func GetAllFiles() ([]model.File, error) {
+	query := "select * from File"
 	db := createConnection()
 	defer db.Close()
-	var tasks []model.Task
+	var files []model.File
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var task model.Task
-		err := rows.Scan(&task.Id, &task.Title, &task.Description, &task.StartTime)
+		var file model.File
+		err := rows.Scan(&file.Id, &file.Name, &file.Size, &file.CreatedTime, &file.LastUpdatedTime, &file.IsDir)
 		if err != nil {
 			return nil, err
 		}
-		tasks = append(tasks, task)
+		files = append(files, file)
 	}
 	if err1 := rows.Err(); err1 != nil {
 		return nil, err1
 	}
-	return tasks, nil
+	return files, nil
 }
 
-func UpdateTask(id string, task model.Task) error {
+func UpdateFile(id string, file model.File) error {
 	db := createConnection()
 	defer db.Close()
 	var paramList []any
-	query := "update task set"
-	if task.Description != "" {
-		query = query + " Description=?,"
-		paramList = append(paramList, task.Description)
+	query := "update File set"
+	if file.Name != "" {
+		query = query + " name=?,"
+		paramList = append(paramList, file.Name)
 	}
-	if task.Title != "" {
-		query = query + " Title=?,"
-		paramList = append(paramList, task.Title)
+	if &file.Size != nil {
+		query = query + " size=?,"
+		paramList = append(paramList, file.Size)
 	}
-	if !task.StartTime.IsZero() {
-		query = query + " StartTime=?,"
-		paramList = append(paramList, task.StartTime)
+	if !file.CreatedTime.IsZero() {
+		query = query + " CreatedTime=?,"
+		paramList = append(paramList, file.CreatedTime)
+	}
+	if !file.LastUpdatedTime.IsZero() {
+		query = query + " LastUpdatedTime=?,"
+		paramList = append(paramList, file.LastUpdatedTime)
+	}
+	if &file.IsDir != nil {
+		query = query + " IsDir=?,"
+		paramList = append(paramList, file.IsDir)
 	}
 	query = query[:len(query)-1]
 	query = query + " where ID=?"
@@ -132,10 +140,10 @@ func UpdateTask(id string, task model.Task) error {
 	return nil
 }
 
-func DeleteTask(id string) error {
+func DeleteFile(id string) error {
 	db := createConnection()
 	defer db.Close()
-	query := "delete from Task where Id=?"
+	query := "delete from File where Id=?"
 	records, err := db.Exec(query, id)
 	if err != nil {
 		return err
@@ -146,11 +154,11 @@ func DeleteTask(id string) error {
 	return nil
 }
 
-func CreateTask(task models.Task) error {
-	query := "insert into Task values(?, ?, ?, ?)"
+func CreateFile(file models.File) error {
+	query := "insert into File values(?, ?, ?, ?)"
 	dbConn := createConnection()
 	defer dbConn.Close()
-	rows, err := dbConn.Query(query, task.Id, task.Title, task.Description, task.StartTime)
+	rows, err := dbConn.Query(query, file.Name, file.Size, file.CreatedTime, file.LastUpdatedTime, file.IsDir)
 	defer rows.Close()
 	if err != nil {
 		log.Println(err.Error())

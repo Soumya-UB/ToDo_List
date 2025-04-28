@@ -14,13 +14,13 @@ type response struct {
 	Message string `json:"message,omitempty"`
 }
 
-func GetTask(w http.ResponseWriter, r *http.Request) {
+func GetFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	params := mux.Vars(r)
 
 	id := params["id"]
-	task, err := db.GetTask(id)
+	task, err := db.GetFile(id)
 
 	if err != nil {
 		_, ok := err.(*errorTypes.NoRowsFoundError)
@@ -34,14 +34,14 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
+func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
 	id := params["id"]
-	err := db.DeleteTask(id)
+	err := db.DeleteFile(id)
 	if err != nil {
 		if _, ok := err.(*errorTypes.NoRowsFoundError); ok {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -56,12 +56,12 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res2)
 }
 
-func GetAllTasks(w http.ResponseWriter, r *http.Request) {
+func GetAllFiles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	tasks, err := db.GetAllTasks()
+	tasks, err := db.GetAllFiles()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,20 +69,20 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
+func UpdateFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
 	id := params["id"]
-	var task models.Task
-	err := json.NewDecoder(r.Body).Decode(&task)
+	var file models.File
+	err := json.NewDecoder(r.Body).Decode(&file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err1 := db.UpdateTask(id, task)
+	err1 := db.UpdateFile(id, file)
 	if err1 != nil {
 		if _, ok := err1.(*errorTypes.NoRowsFoundError); ok {
 			http.Error(w, err1.Error(), http.StatusNotFound)
@@ -97,18 +97,18 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res2)
 }
 
-func CreateTask(w http.ResponseWriter, r *http.Request) {
+func CreateFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	var task models.Task
-	err := json.NewDecoder(r.Body).Decode(&task)
+	var file models.File
+	err := json.NewDecoder(r.Body).Decode(&file)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err1 := db.CreateTask(task)
+	err1 := db.CreateFile(file)
 	if err1 != nil {
 		http.Error(w, err1.Error(), http.StatusInternalServerError)
 		return

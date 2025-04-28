@@ -2,9 +2,11 @@ package models
 
 import "time"
 
-type Task struct {
-	Id          int64
-	Title       string
-	Description string
-	StartTime   time.Time
+type File struct {
+	Id              int64
+	Name            string
+	Size            int64
+	CreatedTime     time.Time
+	LastUpdatedTime time.Time
+	IsDir           bool
 }
