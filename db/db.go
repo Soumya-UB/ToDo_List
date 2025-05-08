@@ -46,7 +46,7 @@ func createConnection() *sql.DB { // Create connection just once
 	}
 	password, err3 := os.ReadFile(passwordPath)
 	if err3 != nil {
-		log.Panicf("Couldn't read db password %v", err3.Error())
+		log.Panicf("Couldn't read db password ", err3.Error())
 	}
 	connString := uname + ":" + string(password[:]) + "@tcp(" + instance + ":" + strconv.Itoa(port) + ")/" + dbName + "?parseTime=true"
 	log.Println("Connection string: %v", connString)
@@ -155,7 +155,13 @@ func DeleteFile(id string) error {
 }
 
 func CreateFile(file models.File) error {
-	query := "insert into File values(?, ?, ?, ?)"
+	log.Println("fileName: ", file.Name)
+	log.Println("fileSize: ", file.Size)
+	log.Println("CreatedTime: ", file.CreatedTime)
+	log.Println("LastUpdatedTime: ", file.LastUpdatedTime)
+	log.Println("IsDir: ", file.IsDir)
+	query := "insert into File(Name, Size, CreatedTime, LastUpdatedTime, IsDir) values(?, ?, ?, ?, ?)"
+	log.Println(query)
 	dbConn := createConnection()
 	defer dbConn.Close()
 	rows, err := dbConn.Query(query, file.Name, file.Size, file.CreatedTime, file.LastUpdatedTime, file.IsDir)
