@@ -132,6 +132,7 @@ func UpdateFile(id string, file model.File) error {
 	paramList = append(paramList, id)
 	records, err := db.Exec(query, paramList...)
 	if err != nil {
+		log.Panic(err.Error())
 		return err
 	}
 	if num, _ := records.RowsAffected(); num < 1 {
@@ -148,7 +149,11 @@ func DeleteFile(id string) error {
 	if err != nil {
 		return err
 	}
-	if num, _ := records.RowsAffected(); num < 1 {
+	num, err := records.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if num < 1 {
 		return &errorTypes.NoRowsFoundError{"No row for id: " + id}
 	}
 	return nil

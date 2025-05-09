@@ -14,6 +14,20 @@ import (
 func main() {
 	fmt.Println("App started")
 	setLogFile()
+	setupTlsServer()
+}
+
+func setLogFile() {
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Panicf("Failed to open file")
+	}
+	log.SetOutput(file)
+	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
+	log.Println("Log file created!")
+}
+
+func setupTlsServer() {
 	r := router.Router()
 	// Create a CA certificate pool and add cert.pem to it
 	caCert, err := ioutil.ReadFile("cert.pem")
@@ -37,14 +51,4 @@ func main() {
 		Handler:   r,
 	}
 	log.Fatal(server.ListenAndServeTLS("cert.pem", "key.pem"))
-}
-
-func setLogFile() {
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Panicf("Failed to open file")
-	}
-	log.SetOutput(file)
-	log.SetFlags(log.Ldate | log.Ltime | log.Llongfile)
-	log.Println("Log file created!")
 }
